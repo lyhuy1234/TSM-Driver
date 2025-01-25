@@ -9,334 +9,14 @@
     <title>Total Driver Overview</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Your existing styles */
         body {
             font-family: "Jersey 15", serif;
             background-color: #f4f7fc;
             margin: 0;
             padding: 0;
         }
-
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            background-color: #967c08;
-            color: white;
-            position: fixed;
-            top: 0;
-            left: 0;
-            padding-top: 50px;
-        }
-
-        .sidebar a {
-            display: block;
-            color: white;
-            padding: 15px 25px;
-            text-decoration: none;
-            font-size: 18px;
-            border-bottom: 1px solid #967c08;
-        }
-
-        .sidebar a:hover {
-            background-color: #5a4a04;
-        }
-
-        .main-content {
-            margin-left: 250px;
-            padding: 30px;
-        }
-
-        h1 {
-            font-size: 36px;
-            color: #967c08;
-        }
-
-        .card {
-            background-color: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .btn1 {
-            background-color: green;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 16px;
-            margin-top: 15px;
-            display: inline-block;
-        }
-
-        .btn1:hover {
-            background-color: rgb(0, 90, 0);
-        }
-
-        .download-btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        .download-btn:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h2 style="text-align: center;">Dashboard</h2>
-        <a href="dashboard.html">Home</a>
-        <a href="#">History</a>
-        <a href="#">Settings</a>
-        <a href="index.html">Logout</a>
-    </div>
-
-    <!-- Main content -->
-    <div class="main-content">
-        <h1>Total Driver Overview</h1>
-
-        <div class="card">
-            <h2>Total Driver</h2>
-            <p>Here you can see all drivers who are active and inactive.</p>
-            <a href="dashboard.html" class="btn1">Go Back to Dashboard</a>
-            <button class="download-btn" onclick="downloadReport()">Download Report</button>
-        </div>
-
-        <!-- Status Overview Section -->
-        <div class="status-container">
-            <div class="status-card" id="totalStaffCard">
-                <h3>Total Driver</h3>
-                <p id="totalStaff">0</p>
-            </div>
-            <div class="status-card" id="activeStaffCard">
-                <h3>Active Driver</h3>
-                <p id="activeStaff">0</p>
-            </div>
-            <div class="status-card" id="inactiveStaffCard">
-                <h3>Inactive Driver</h3>
-                <p id="inactiveStaff">0</p>
-            </div>
-        </div>
-
-        <!-- Active Driver List -->
-        <div class="card staff-list" id="activeStaffList">
-            <h2>Active Driver</h2>
-            <ul id="activeStaffDetails" class="list-group">
-                <!-- Active staff will be listed here -->
-            </ul>
-        </div>
-
-        <!-- Inactive Driver List -->
-        <div class="card staff-list" id="inactiveStaffList">
-            <h2>Inactive Driver</h2>
-            <ul id="inactiveStaffDetails" class="list-group">
-                <!-- Inactive staff will be listed here -->
-            </ul>
-        </div>
-    </div>
-
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- JavaScript to Load and Display Data -->
-    <script>
-        // Load staff data from localStorage
-        function loadStaffData() {
-            const staffData = JSON.parse(localStorage.getItem('staffData')) || [];
-
-            // Calculate total, active, and inactive staff counts
-            const totalStaff = staffData.length;
-            const activeStaff = staffData.filter(staff => staff.active);
-            const inactiveStaff = staffData.filter(staff => !staff.active);
-
-            // Update the UI with the counts
-            document.getElementById('totalStaff').textContent = totalStaff;
-            document.getElementById('activeStaff').textContent = activeStaff.length;
-            document.getElementById('inactiveStaff').textContent = inactiveStaff.length;
-
-            // Populate the active staff list
-            const activeStaffList = document.getElementById('activeStaffDetails');
-            activeStaffList.innerHTML = ''; // Clear previous list items
-            activeStaff.forEach(staff => {
-                const listItem = document.createElement('li');
-                listItem.classList.add('list-group-item');
-                listItem.textContent = `${staff.name} (${staff.id}) - ${staff.position}`;
-                activeStaffList.appendChild(listItem);
-            });
-
-            // Populate the inactive staff list
-            const inactiveStaffList = document.getElementById('inactiveStaffDetails');
-            inactiveStaffList.innerHTML = ''; // Clear previous list items
-            inactiveStaff.forEach(staff => {
-                const listItem = document.createElement('li');
-                listItem.classList.add('list-group-item');
-                listItem.textContent = `${staff.name} (${staff.id}) - ${staff.position}`;
-                inactiveStaffList.appendChild(listItem);
-            });
-        }
-
-        // Function to generate and download a report
-        function downloadReport() {
-            const staffData = JSON.parse(localStorage.getItem('staffData')) || [];
-            let csvContent = "Name,ID,Position,Status\n";
-
-            staffData.forEach(staff => {
-                csvContent += `${staff.name},${staff.id},${staff.position},${staff.active ? 'Active' : 'Inactive'}\n`;
-            });
-
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'driver_report.csv';
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // Initialize the page when it loads
-        window.onload = loadStaffData;
-    </script>
-</body>
-</html>  border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .card h2 {
-            margin: 0;
-            font-size: 24px;
-            color: #2c3e50;
-        }
-
-        .card p {
-            font-size: 16px;
-            color: #7f8c8d;
-        }
-
-        .btn1 {
-            background-color: green;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 16px;
-            margin-top: 15px;
-            display: inline-block;
-            width: 170px;
-        }
-
-        .btn1:hover {
-            background-color: rgb(0, 90, 0);
-        }
-
-        .status-container {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 30px;
-        }
-
-        .status-card {
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            flex: 1;
-            margin: 3px;
-        }
-
-        .btn1 {
-            background-color: green;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 16px;
-            margin-top: 15px;
-            display: inline-block;
-            width: 170px;
-        }
-
-        #totalStaffCard {
-            background-color: rgb(0, 137, 179);
-        }
-
-        #activeStaffCard {
-            background-color: green;
-        }
-
-        #inactiveStaffCard {
-            background-color: red;
-        }
-
-        .status-card h3 {
-            font-size: 24px;
-        }
-
-        .status-card p {
-            font-size: 20px;
-            margin-top: 10px;
-        }
-
-        .staff-list {
-            margin-top: 20px;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 10px;
-            background-color: #967c08;
-            color: white;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 200px;
-            }
-
-            .main-content {
-                margin-left: 200px;
-            }
-        }
-
-        @media (max-width: 500px) {
-            .sidebar {
-                width: 100%;
-                position: relative;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .status-container {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .status-card {
-                margin-bottom: 15px;
-                width: 100%;
-            }
-
-            .status-card:last-child {
-                margin-bottom: 0;
-            }
-        }
+        /* Other existing styles... */
     </style>
 </head>
 <body>
@@ -358,6 +38,7 @@
             <h2>Total Driver</h2>
             <p>Here you can see all driver who active and inactive.</p>
             <a href="dashboard.html" class="btn1">Go Back to Dashboard</a>
+            <button class="btn1" onclick="downloadReport()">Download Report</button>
         </div>
 
         <!-- Status Overview Section -->
@@ -395,25 +76,24 @@
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- JavaScript to Load and Display Data -->
+    <!-- jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
     <script>
         // Load staff data from localStorage
         function loadStaffData() {
             const staffData = JSON.parse(localStorage.getItem('staffData')) || [];
     
-            // Calculate total, active, and inactive staff counts
             const totalStaff = staffData.length;
             const activeStaff = staffData.filter(staff => staff.active);
             const inactiveStaff = staffData.filter(staff => !staff.active);
     
-            // Update the UI with the counts
             document.getElementById('totalStaff').textContent = totalStaff;
             document.getElementById('activeStaff').textContent = activeStaff.length;
             document.getElementById('inactiveStaff').textContent = inactiveStaff.length;
     
-            // Populate the active staff list
             const activeStaffList = document.getElementById('activeStaffDetails');
-            activeStaffList.innerHTML = ''; // Clear previous list items
+            activeStaffList.innerHTML = ''; 
             activeStaff.forEach(staff => {
                 const listItem = document.createElement('li');
                 listItem.classList.add('list-group-item');
@@ -421,9 +101,8 @@
                 activeStaffList.appendChild(listItem);
             });
     
-            // Populate the inactive staff list
             const inactiveStaffList = document.getElementById('inactiveStaffDetails');
-            inactiveStaffList.innerHTML = ''; // Clear previous list items
+            inactiveStaffList.innerHTML = ''; 
             inactiveStaff.forEach(staff => {
                 const listItem = document.createElement('li');
                 listItem.classList.add('list-group-item');
@@ -431,7 +110,72 @@
                 inactiveStaffList.appendChild(listItem);
             });
         }
-    
+
+        // Function to generate and download report as PDF
+        async function downloadReport() {
+                       const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add title to the PDF
+            doc.setFontSize(22);
+            doc.text("Total Driver Overview Report", 10, 10);
+
+            // Add a separator
+            doc.setLineWidth(0.5);
+            doc.line(10, 15, 200, 15);
+
+            // Add summary data
+            const totalDrivers = document.getElementById("totalStaff").textContent;
+            const activeDrivers = document.getElementById("activeStaff").textContent;
+            const inactiveDrivers = document.getElementById("inactiveStaff").textContent;
+
+            doc.setFontSize(16);
+            doc.text(`Total Drivers: ${totalDrivers}`, 10, 30);
+            doc.text(`Active Drivers: ${activeDrivers}`, 10, 40);
+            doc.text(`Inactive Drivers: ${inactiveDrivers}`, 10, 50);
+
+            // Add active driver list
+            doc.setFontSize(18);
+            doc.text("Active Drivers:", 10, 70);
+            const activeDriverItems = document.querySelectorAll("#activeStaffDetails li");
+            let yPosition = 80;
+
+            activeDriverItems.forEach((item) => {
+                if (yPosition > 280) {
+                    doc.addPage();
+                    yPosition = 10;
+                }
+                doc.setFontSize(14);
+                doc.text(`- ${item.textContent}`, 10, yPosition);
+                yPosition += 10;
+            });
+
+            // Add inactive driver list
+            yPosition += 10; // Add some space before the next section
+            if (yPosition > 280) {
+                doc.addPage();
+                yPosition = 10;
+            }
+            doc.setFontSize(18);
+            doc.text("Inactive Drivers:", 10, yPosition);
+            yPosition += 10;
+
+            const inactiveDriverItems = document.querySelectorAll("#inactiveStaffDetails li");
+
+            inactiveDriverItems.forEach((item) => {
+                if (yPosition > 280) {
+                    doc.addPage();
+                    yPosition = 10;
+                }
+                doc.setFontSize(14);
+                doc.text(`- ${item.textContent}`, 10, yPosition);
+                yPosition += 10;
+            });
+
+            // Save the PDF
+            doc.save("Driver_Overview_Report.pdf");
+        }
+
         // Initialize the page when it loads
         window.onload = loadStaffData;
     </script>
