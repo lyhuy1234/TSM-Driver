@@ -58,6 +58,159 @@
             margin-bottom: 20px;
         }
 
+        .btn1 {
+            background-color: green;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            margin-top: 15px;
+            display: inline-block;
+        }
+
+        .btn1:hover {
+            background-color: rgb(0, 90, 0);
+        }
+
+        .download-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .download-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2 style="text-align: center;">Dashboard</h2>
+        <a href="dashboard.html">Home</a>
+        <a href="#">History</a>
+        <a href="#">Settings</a>
+        <a href="index.html">Logout</a>
+    </div>
+
+    <!-- Main content -->
+    <div class="main-content">
+        <h1>Total Driver Overview</h1>
+
+        <div class="card">
+            <h2>Total Driver</h2>
+            <p>Here you can see all drivers who are active and inactive.</p>
+            <a href="dashboard.html" class="btn1">Go Back to Dashboard</a>
+            <button class="download-btn" onclick="downloadReport()">Download Report</button>
+        </div>
+
+        <!-- Status Overview Section -->
+        <div class="status-container">
+            <div class="status-card" id="totalStaffCard">
+                <h3>Total Driver</h3>
+                <p id="totalStaff">0</p>
+            </div>
+            <div class="status-card" id="activeStaffCard">
+                <h3>Active Driver</h3>
+                <p id="activeStaff">0</p>
+            </div>
+            <div class="status-card" id="inactiveStaffCard">
+                <h3>Inactive Driver</h3>
+                <p id="inactiveStaff">0</p>
+            </div>
+        </div>
+
+        <!-- Active Driver List -->
+        <div class="card staff-list" id="activeStaffList">
+            <h2>Active Driver</h2>
+            <ul id="activeStaffDetails" class="list-group">
+                <!-- Active staff will be listed here -->
+            </ul>
+        </div>
+
+        <!-- Inactive Driver List -->
+        <div class="card staff-list" id="inactiveStaffList">
+            <h2>Inactive Driver</h2>
+            <ul id="inactiveStaffDetails" class="list-group">
+                <!-- Inactive staff will be listed here -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript to Load and Display Data -->
+    <script>
+        // Load staff data from localStorage
+        function loadStaffData() {
+            const staffData = JSON.parse(localStorage.getItem('staffData')) || [];
+
+            // Calculate total, active, and inactive staff counts
+            const totalStaff = staffData.length;
+            const activeStaff = staffData.filter(staff => staff.active);
+            const inactiveStaff = staffData.filter(staff => !staff.active);
+
+            // Update the UI with the counts
+            document.getElementById('totalStaff').textContent = totalStaff;
+            document.getElementById('activeStaff').textContent = activeStaff.length;
+            document.getElementById('inactiveStaff').textContent = inactiveStaff.length;
+
+            // Populate the active staff list
+            const activeStaffList = document.getElementById('activeStaffDetails');
+            activeStaffList.innerHTML = ''; // Clear previous list items
+            activeStaff.forEach(staff => {
+                const listItem = document.createElement('li');
+                listItem.classList.add('list-group-item');
+                listItem.textContent = `${staff.name} (${staff.id}) - ${staff.position}`;
+                activeStaffList.appendChild(listItem);
+            });
+
+            // Populate the inactive staff list
+            const inactiveStaffList = document.getElementById('inactiveStaffDetails');
+            inactiveStaffList.innerHTML = ''; // Clear previous list items
+            inactiveStaff.forEach(staff => {
+                const listItem = document.createElement('li');
+                listItem.classList.add('list-group-item');
+                listItem.textContent = `${staff.name} (${staff.id}) - ${staff.position}`;
+                inactiveStaffList.appendChild(listItem);
+            });
+        }
+
+        // Function to generate and download a report
+        function downloadReport() {
+            const staffData = JSON.parse(localStorage.getItem('staffData')) || [];
+            let csvContent = "Name,ID,Position,Status\n";
+
+            staffData.forEach(staff => {
+                csvContent += `${staff.name},${staff.id},${staff.position},${staff.active ? 'Active' : 'Inactive'}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'driver_report.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize the page when it loads
+        window.onload = loadStaffData;
+    </script>
+</body>
+</html>  border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
         .card h2 {
             margin: 0;
             font-size: 24px;
